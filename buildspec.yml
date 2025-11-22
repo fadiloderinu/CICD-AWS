@@ -11,6 +11,7 @@ phases:
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       - echo Listing files in workspace...
       - ls -la
+      - echo Files ready for build
       - echo Checking for Dockerfile...
       - test -f Dockerfile && echo "Dockerfile found" || echo "ERROR: Dockerfile not found"
 
