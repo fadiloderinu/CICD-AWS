@@ -6,18 +6,13 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
       - echo Logging in to Docker Hub...
-      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin || echo "Docker Hub login skipped - will use unauthenticated pulls"
+      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin || echo "Docker Hub login skipped"
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
-      - echo Listing files in workspace...
-      - ls -la
-      - echo Files ready for build
-      - echo Checking for Dockerfile...
-      - test -f Dockerfile && echo "Dockerfile found" || echo "ERROR: Dockerfile not found"
+      - echo Build started with IMAGE_TAG=$IMAGE_TAG
 
   build:
     commands:
-      - echo Build started on `date`
       - echo Building Docker image from source...
       - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -f Dockerfile .
       - docker tag $ECR_REPOSITORY_URI:$IMAGE_TAG $ECR_REPOSITORY_URI:latest
@@ -26,7 +21,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker images...
+      - echo Pushing Docker images to ECR...
       - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
       - docker push $ECR_REPOSITORY_URI:latest
       - echo Writing image definitions file...
