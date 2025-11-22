@@ -200,6 +200,18 @@ resource "aws_codebuild_project" "main" {
       value = "latest"
       type  = "PLAINTEXT"
     }
+
+    environment_variable {
+      name  = "DOCKER_USERNAME"
+      value = ""
+      type  = "PLAINTEXT"
+    }
+
+    environment_variable {
+      name  = "DOCKER_PASSWORD"
+      value = ""
+      type  = "PLAINTEXT"
+    }
   }
 
   logs_config {
