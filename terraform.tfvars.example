@@ -14,7 +14,7 @@ ecr_repository_uri = "505285757529.dkr.ecr.us-east-1.amazonaws.com/assignment3"
 use_existing_ecr   = true
 
 # GitHub configuration (get token from https://github.com/settings/tokens)
-github_owner  = "fadiloderinu"
-github_repo   = "CICD-AWS"
+github_owner  = "your-github-username"
+github_repo   = "your-repo-name"
 github_branch = "main"
-github_token  = "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"
+github_token  = "ghp_your_github_token_here"
