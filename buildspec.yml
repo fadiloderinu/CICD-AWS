@@ -5,13 +5,20 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo Listing files in workspace...
+      - ls -la
+      - echo Checking for Dockerfile...
+      - test -f Dockerfile && echo "Dockerfile found" || echo "ERROR: Dockerfile not found"
 
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG .
+      - echo Building Docker image from source...
+      - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -f Dockerfile .
       - docker tag $ECR_REPOSITORY_URI:$IMAGE_TAG $ECR_REPOSITORY_URI:latest
+      - echo Image built successfully
       - echo Scanning image for vulnerabilities...
       - aws ecr start-image-scan --repository-name $(echo $ECR_REPOSITORY_URI | cut -d'/' -f2) --image-id imageTag=$IMAGE_TAG --region $AWS_DEFAULT_REGION
 
