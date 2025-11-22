@@ -1,0 +1,20 @@
+aws_region         = "us-east-1"
+app_name           = "hello-ecs-app"
+vpc_cidr           = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.11.0/24", "10.0.12.0/24"]
+ecs_task_cpu       = "256"
+ecs_task_memory    = "512"
+ecs_desired_count  = 2
+ecs_min_capacity   = 2
+ecs_max_capacity   = 4
+
+# ECR Configuration - Use your existing ECR repository
+ecr_repository_uri = "505285757529.dkr.ecr.us-east-1.amazonaws.com/assignment3"
+use_existing_ecr   = true
+
+# GitHub configuration (get token from https://github.com/settings/tokens)
+github_owner  = "your-github-username"
+github_repo   = "your-repo-name"
+github_branch = "main"
+github_token  = "ghp_your_github_token_here"

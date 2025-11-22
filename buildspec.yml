@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG .
+      - docker tag $ECR_REPOSITORY_URI:$IMAGE_TAG $ECR_REPOSITORY_URI:latest
+      - echo Scanning image for vulnerabilities...
+      - aws ecr start-image-scan --repository-name $(echo $ECR_REPOSITORY_URI | cut -d'/' -f2) --image-id imageTag=$IMAGE_TAG --region $AWS_DEFAULT_REGION
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - docker push $ECR_REPOSITORY_URI:latest
+      - echo Writing image definitions file...
+      - printf '[{"name":"assignment3","imageUri":"'$ECR_REPOSITORY_URI:$IMAGE_TAG'"}]' > imagedefinitions.json
+
+artifacts:
+  files: imagedefinitions.json
