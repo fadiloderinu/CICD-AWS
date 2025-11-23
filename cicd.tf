@@ -104,9 +104,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
       {
         Effect = "Allow"
         Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:GetObjectVersion"
+          "s3:*"
         ]
         Resource = "${aws_s3_bucket.codepipeline_artifacts.arn}/*"
       },
@@ -121,35 +119,16 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
       {
         Effect = "Allow"
         Action = [
-          "codebuild:BatchGetBuilds",
-          "codebuild:BatchGetReports",
-          "codebuild:StartBuild"
+          "codebuild:*"
         ]
         Resource = "*"
       },
       {
         Effect = "Allow"
         Action = [
-          "ecs:UpdateService",
-          "ecs:DescribeServices",
-          "ecs:DescribeTaskDefinition",
-          "ecs:DescribeTasks",
-          "ecs:ListTasks",
-          "ecs:RegisterTaskDefinition"
-        ]
-        Resource = "*"
-      },
-      {
-        Effect = "Allow"
-        Action = [
+          "ecs:*",
+          "ecr:*",
           "iam:PassRole"
-        ]
-        Resource = "*"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:DescribeImages"
         ]
         Resource = "*"
       }
@@ -293,6 +272,18 @@ resource "aws_codepipeline" "main" {
       configuration = {
         ProjectName = aws_codebuild_project.main.name
       }
+    }
+  }
+
+  stage {
+    name = "Approval"
+
+    action {
+      name     = "ManualApproval"
+      category = "Approval"
+      owner    = "AWS"
+      provider = "Manual"
+      version  = "1"
     }
   }
 
