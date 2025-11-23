@@ -31,6 +31,13 @@ resource "aws_iam_role_policy" "codebuild_policy" {
       {
         Effect = "Allow"
         Action = [
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
           "ecr:PutImage",
@@ -38,11 +45,10 @@ resource "aws_iam_role_policy" "codebuild_policy" {
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload",
           "ecr:BatchCheckLayerAvailability",
-          "ecr:GetAuthorizationToken",
           "ecr:DescribeRepositories",
           "ecr:DescribeImages"
         ]
-        Resource = "*"
+        Resource = "arn:aws:ecr:*:*:repository/*"
       },
       {
         Effect = "Allow"
@@ -139,6 +145,13 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
           "iam:PassRole"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:DescribeImages"
+        ]
+        Resource = "*"
       }
     ]
   })
@@ -198,18 +211,6 @@ resource "aws_codebuild_project" "main" {
     environment_variable {
       name  = "IMAGE_TAG"
       value = "latest"
-      type  = "PLAINTEXT"
-    }
-
-    environment_variable {
-      name  = "DOCKER_USERNAME"
-      value = ""
-      type  = "PLAINTEXT"
-    }
-
-    environment_variable {
-      name  = "DOCKER_PASSWORD"
-      value = ""
       type  = "PLAINTEXT"
     }
   }
